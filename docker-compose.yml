@@ -1,16 +1,4 @@
 services:
-	
-  mongo-seed:
-    image: mongo:latest
-    container_name: mongo-seed
-    volumes:
-      - ./mongo_seed:/seed
-      - ./mongo_seed/data:/seed/data
-    env_file:
-      - .env
-    entrypoint: ["/bin/bash", "/seed/seed.sh"]
-    restart: "no"
-
   ecommerce:
     image: famtwen/ecommerce_mongodb:latest
     container_name: ecommerce_mongodb
@@ -18,8 +6,6 @@ services:
       - "8080:8080"
     env_file:
       - .env
-    depends_on:
-      - mongo-seed
     volumes:
       - ./data_ecommerce:/app/data 
     networks:
