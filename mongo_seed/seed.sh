@@ -1,13 +1,21 @@
 #!/bin/sh
-mongoimport --host mongo --db $MONGO_DATABASE --collection users --type json --file ./mongo_seed/users.json --jsonArray > /seed/data/users_import.log 2>&1
 
-echo "==> Checking connection to MongoDB at mongoimport --host mongo --db $MONGO_DATABASE --collection users --type json --file ./mongo_seed/users.json --jsonArray ..."
+# Thử kết nối mongosh trước
+echo "==> Testing connection to MongoDB ..."
+mongosh "mongodb://usertest:Usertest%40123@192.168.20.163:9328/?directConnection=true" --eval "db.adminCommand('ping')"
 
-echo "==> users.json imported successfully."
+if [ $? -eq 0 ]; then
+    echo "==> Connection successful, importing data..."
+    
+    mongoimport --uri "mongodb://usertest:Usertest%40123@192.168.20.163:9328/test?directConnection=true" --collection users --type json --file /seed/users.json --jsonArray
+    
+    echo "==> users.json imported successfully."
 
-mongoimport --host mongo --db $MONGO_DATABASE --collection products --type json --file ./mongo_seed/products.json --jsonArray  > /seed/data/products_import.log 2>&1
+    mongoimport --uri "mongodb://usertest:Usertest%40123@192.168.20.163:9328/test?directConnection=true" --collection products --type json --file /seed/products.json --jsonArray
 
-echo "==> products.json imported successfully."
-
+    echo "==> products.json imported successfully."
+else
+    echo "==> Connection failed, cannot import data."
+fi
 
 echo "==> Seed finished!"
