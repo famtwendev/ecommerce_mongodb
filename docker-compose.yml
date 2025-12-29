@@ -1,0 +1,38 @@
+services:
+  mongo-seed:
+    image: mongo:latest
+    container_name: mongo-seed
+    volumes:
+      - ./mongo_seed:/seed
+      - ./mongo_seed/data:/seed/data
+    environment:
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_DATABASE=${MONGO_DATABASE}
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+    entrypoint: ["/bin/bash", "/seed/seed.sh"]
+    restart: "no"
+
+  ecommerce:
+    image: famtwen/ecommerce_mongodb:latest
+    container_name: ecommerce_mongodb
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATA_MONGODB_HOST=${SPRING_DATA_MONGODB_HOST}
+      - SPRING_DATA_MONGODB_PORT=${SPRING_DATA_MONGODB_PORT}
+      - SPRING_DATA_MONGODB_DATABASE=${SPRING_DATA_MONGODB_DATABASE}
+      - SPRING_DATA_MONGODB_USERNAME=${SPRING_DATA_MONGODB_USERNAME}
+      - SPRING_DATA_MONGODB_PASSWORD=${SPRING_DATA_MONGODB_PASSWORD}
+    depends_on:
+      - mongo-seed
+    volumes:
+      - ./data_ecommerce:/app/data 
+    networks:
+      - main-network
+
+networks:
+  main-network:
+    driver: bridge
+
